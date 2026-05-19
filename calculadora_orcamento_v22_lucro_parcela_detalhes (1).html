@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Calculadora de Negociação Mobile v22 - JG Conforto</title>
+  <style>
+    :root{
+      --bg:#f4f6f8;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --primary:#0f766e;
+      --primary-dark:#115e59;
+      --danger:#dc2626;
+      --warn:#ca8a04;
+      --good:#16a34a;
+      --soft:#f9fafb;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:Arial, Helvetica, sans-serif;
+      padding:12px 12px 96px;
+    }
+    .app{
+      max-width:520px;
+      margin:0 auto;
+    }
+    h1{
+      font-size:20px;
+      margin:8px 0 4px;
+      text-align:center;
+    }
+    .subtitle{
+      text-align:center;
+      font-size:13px;
+      color:var(--muted);
+      margin-bottom:12px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      margin-bottom:12px;
+      box-shadow:0 2px 8px rgba(0,0,0,.04);
+    }
+    .section-title{
+      font-weight:700;
+      font-size:15px;
+      margin-bottom:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+    }
+    label{
+      display:block;
+      font-size:13px;
+      font-weight:600;
+      margin-bottom:5px;
+    }
+    input, select{
+      width:100%;
+      height:46px;
+      border:1px solid #d1d5db;
+      border-radius:12px;
+      padding:0 12px;
+      font-size:16px;
+      background:#fff;
+    }
+    input:focus, select:focus{
+      outline:2px solid rgba(15,118,110,.18);
+      border-color:var(--primary);
+    }
+    .grid2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    .row{
+      display:grid;
+      gap:10px;
+      margin-bottom:12px;
+    }
+    .item{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      background:var(--soft);
+      margin-bottom:10px;
+    }
+    .item-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:10px;
+      font-size:14px;
+      font-weight:700;
+    }
+    .remove{
+      border:none;
+      background:#fee2e2;
+      color:#991b1b;
+      border-radius:10px;
+      padding:7px 10px;
+      font-weight:700;
+    }
+    button{
+      cursor:pointer;
+      border:none;
+      border-radius:13px;
+      font-weight:700;
+      font-size:15px;
+      min-height:46px;
+      padding:10px 12px;
+    }
+    .btn-primary{background:var(--primary);color:white}
+    .btn-primary:active{background:var(--primary-dark)}
+    .btn-secondary{background:#e5e7eb;color:#111827}
+    .btn-danger{background:#fee2e2;color:#991b1b}
+    .btn-line{background:#fff;border:1px solid var(--line);color:#111827}
+    .full{width:100%}
+    .payment-tabs{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+    .tab{
+      background:#e5e7eb;
+      color:#374151;
+    }
+    .tab.active{
+      background:var(--primary);
+      color:#fff;
+    }
+    .result{
+      text-align:center;
+      padding:18px 14px;
+    }
+    .result-label{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:700;
+      letter-spacing:.04em;
+    }
+    .result-value{
+      font-size:36px;
+      font-weight:900;
+      margin:6px 0;
+    }
+    .badge{
+      display:inline-block;
+      border-radius:999px;
+      padding:7px 12px;
+      font-size:13px;
+      font-weight:800;
+    }
+    .badge.good{background:#dcfce7;color:#166534}
+    .badge.warn{background:#fef3c7;color:#92400e}
+    .badge.danger{background:#fee2e2;color:#991b1b}
+    .mini{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-top:12px;
+    }
+    .profit-box{
+      margin-top:12px;
+      background:#ecfdf5;
+      border:2px solid #16a34a;
+      border-radius:16px;
+      padding:12px;
+      text-align:center;
+    }
+    .profit-box span{
+      display:block;
+      font-size:12px;
+      font-weight:800;
+      color:#166534;
+      letter-spacing:.04em;
+    }
+    .profit-box strong{
+      display:block;
+      font-size:28px;
+      margin-top:3px;
+      color:#14532d;
+    }
+    .installment-box{
+      margin-top:10px;
+      background:#eff6ff;
+      border:1px solid #bfdbfe;
+      border-radius:14px;
+      padding:10px;
+      text-align:center;
+      display:none;
+    }
+    .installment-box span{
+      display:block;
+      font-size:12px;
+      font-weight:800;
+      color:#1e40af;
+    }
+    .installment-box strong{
+      display:block;
+      font-size:22px;
+      color:#1d4ed8;
+      margin-top:2px;
+    }
+    .detail-list{
+      margin-top:12px;
+      display:grid;
+      gap:8px;
+    }
+    .detail-item{
+      border:1px solid var(--line);
+      background:var(--soft);
+      border-radius:12px;
+      padding:10px;
+      font-size:13px;
+    }
+    .detail-item b{
+      display:block;
+      font-size:14px;
+      margin-bottom:6px;
+    }
+    .detail-line{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      padding:2px 0;
+      color:#374151;
+    }
+    .metric{
+      background:var(--soft);
+      border:1px solid var(--line);
+      border-radius:12px;
+      padding:10px;
+      text-align:left;
+    }
+    .metric span{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      margin-bottom:4px;
+    }
+    .metric strong{
+      font-size:15px;
+    }
+    details summary{
+      cursor:pointer;
+      font-weight:800;
+      font-size:15px;
+      list-style:none;
+    }
+    details summary::-webkit-details-marker{display:none}
+    .config{
+      margin-top:12px;
+    }
+    .hint{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+      margin-top:8px;
+    }
+    .bottom-bar{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      background:rgba(255,255,255,.96);
+      border-top:1px solid var(--line);
+      padding:10px 12px;
+      display:grid;
+      grid-template-columns:1.15fr 1fr .8fr;
+      gap:8px;
+      max-width:520px;
+      margin:auto;
+      box-shadow:0 -3px 12px rgba(0,0,0,.06);
+    }
+    .toast{
+      position:fixed;
+      bottom:86px;
+      left:50%;
+      transform:translateX(-50%);
+      background:#111827;
+      color:#fff;
+      padding:10px 14px;
+      border-radius:12px;
+      font-size:13px;
+      display:none;
+      z-index:5;
+    }
+    .hidden{display:none}
+    @media (max-width:360px){
+      .result-value{font-size:31px}
+      .bottom-bar button{font-size:13px;padding:8px}
+      input,select{font-size:15px}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>Calculadora de Negociação</h1>
+    <div class="subtitle">JG Conforto • uso rápido no celular</div>
+
+    <details class="card">
+      <summary>⚙️ Configurações e metas</summary>
+      <div class="config">
+        <div class="grid2">
+          <div>
+            <label>Meta mensal faturamento</label>
+            <input id="metaMensal" type="number" inputmode="decimal" />
+          </div>
+          <div>
+            <label>Royalty %</label>
+            <input id="royaltyPerc" type="number" inputmode="decimal" step="0.1" />
+          </div>
+        </div>
+        <div class="grid2" style="margin-top:10px">
+          <div>
+            <label>Taxa cartão %</label>
+            <input id="taxaCartao" type="number" inputmode="decimal" step="0.1" />
+          </div>
+          <div>
+            <label>Desconto Pix sugestão %</label>
+            <input id="descontoPix" type="number" inputmode="decimal" step="0.1" />
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top:14px">Margem por categoria</div>
+        <div class="grid2">
+          <div><label>Reforma colchão %</label><input id="margem_reforma_colchao" type="number" inputmode="decimal" step="0.1" /></div>
+          <div><label>Reforma box %</label><input id="margem_reforma_box" type="number" inputmode="decimal" step="0.1" /></div>
+          <div><label>Colchão novo %</label><input id="margem_colchao_novo" type="number" inputmode="decimal" step="0.1" /></div>
+          <div><label>Box baú %</label><input id="margem_box_bau" type="number" inputmode="decimal" step="0.1" /></div>
+          <div><label>Box simples %</label><input id="margem_box_simples" type="number" inputmode="decimal" step="0.1" /></div>
+          <div><label>Cabeceira %</label><input id="margem_cabeceira" type="number" inputmode="decimal" step="0.1" /></div>
+          <div><label>Outros %</label><input id="margem_outros" type="number" inputmode="decimal" step="0.1" /></div>
+        </div>
+
+        <div class="grid2" style="margin-top:10px">
+          <div><label>Margem mínima alerta %</label><input id="margemMinima" type="number" inputmode="decimal" step="0.1" /></div>
+          <div><label>Margem boa %</label><input id="margemBoa" type="number" inputmode="decimal" step="0.1" /></div>
+        </div>
+        <p class="hint">Essas configurações ficam salvas no navegador. A parte principal também salva a negociação atual para evitar perda se fechar sem querer.</p>
+      </div>
+    </details>
+
+    <div class="card">
+      <div class="section-title">
+        <span>Itens da negociação</span>
+        <span id="contadorItens">1/5</span>
+      </div>
+      <div id="itens"></div>
+      <button class="btn-line full" onclick="adicionarItem()">+ adicionar produto</button>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Pagamento</div>
+      <div class="payment-tabs">
+        <button id="btnPix" class="tab" onclick="setPagamento('pix')">Pix</button>
+        <button id="btnCartao" class="tab" onclick="setPagamento('cartao')">Cartão</button>
+      </div>
+      <div class="hint" style="margin-top:10px">Pix não aplica desconto automático; assim o lucro tende a ficar maior que no cartão. Desconto só entra no campo manual.</div>
+      <div id="parcelasWrap" style="margin-top:10px">
+        <label>Parcelas</label>
+        <select id="parcelas">
+          <option value="1">1x</option><option value="2">2x</option><option value="3">3x</option>
+          <option value="4">4x</option><option value="5">5x</option><option value="6">6x</option>
+          <option value="7">7x</option><option value="8">8x</option><option value="9">9x</option>
+          <option value="10" selected>10x</option>
+        </select>
+      </div>
+      <div style="margin-top:10px">
+        <label>Desconto manual R$</label>
+        <input id="descontoCombo" type="number" inputmode="decimal" placeholder="Opcional. Ex: 100" />
+        <div class="hint">Nenhum desconto é aplicado automaticamente. Se quiser dar desconto no Pix ou combo, coloque o valor aqui.</div>
+      </div>
+    </div>
+
+    <div class="card result">
+      <div class="result-label">VALOR CLIENTE</div>
+      <div class="result-value" id="valorCliente">R$ 0,00</div>
+      <div id="statusMargem" class="badge warn">Aguardando cálculo</div>
+
+      <div class="profit-box">
+        <span>LUCRO ESTIMADO / MARGEM BRUTA</span>
+        <strong id="lucroDestaque">R$ 0,00</strong>
+      </div>
+
+      <div class="installment-box" id="parcelaBox">
+        <span>VALOR DA PARCELA</span>
+        <strong id="valorParcela">R$ 0,00</strong>
+      </div>
+
+      <div class="mini">
+        <div class="metric"><span>Custo total</span><strong id="custoTotal">R$ 0,00</strong></div>
+        <div class="metric"><span>Lucro estimado</span><strong id="lucroEstimado">R$ 0,00</strong></div>
+        <div class="metric"><span>Margem real</span><strong id="margemReal">0%</strong></div>
+        <div class="metric"><span>Impacto meta</span><strong id="impactoMeta">0%</strong></div>
+      </div>
+    </div>
+
+    <details class="card">
+      <summary>📊 Mostrar detalhes do cálculo</summary>
+      <div class="mini" style="margin-top:12px">
+        <div class="metric"><span>Subtotal com margem</span><strong id="subtotalMargem">R$ 0,00</strong></div>
+        <div class="metric"><span>Royalty total</span><strong id="royaltyValor">R$ 0,00</strong></div>
+        <div class="metric"><span>Taxa cartão</span><strong id="taxaValor">R$ 0,00</strong></div>
+        <div class="metric"><span>Desconto manual</span><strong id="descontosValor">R$ 0,00</strong></div>
+      </div>
+      <div class="detail-list" id="detalhesItens"></div>
+      <p class="hint">
+        Lógica: custo → preço com margem da categoria → soma royalty separado → soma taxa de cartão se houver → aplica somente desconto manual. Pix não reduz o preço automaticamente.
+      </p>
+    </details>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="btn-primary" onclick="calcular()">Calcular</button>
+    <button class="btn-secondary" onclick="copiarResumo()">Copiar</button>
+    <button class="btn-danger" onclick="limparNegociacao()">Limpar</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+const categorias = [
+  ["reforma_colchao","Reforma colchão"],
+  ["reforma_box","Reforma box"],
+  ["colchao_novo","Colchão novo"],
+  ["box_bau","Box baú"],
+  ["box_simples","Box simples"],
+  ["cabeceira","Cabeceira"],
+  ["outros","Outros"]
+];
+
+const defaults = {
+  metaMensal: 50000,
+  royaltyPerc: 7,
+  taxaCartao: 12,
+  descontoPix: 10,
+  margemMinima: 35,
+  margemBoa: 40,
+  margem_reforma_colchao: 40,
+  margem_reforma_box: 40,
+  margem_colchao_novo: 30,
+  margem_box_bau: 30,
+  margem_box_simples: 30,
+  margem_cabeceira: 35,
+  margem_outros: 35
+};
+
+let itens = [{categoria:"reforma_colchao", custo:""}];
+let pagamento = "cartao";
+let ultimoResultado = null;
+
+function money(n){
+  return (Number(n)||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+}
+function pct(n){
+  return `${(Number(n)||0).toFixed(1).replace(".",",")}%`;
+}
+function nval(id){
+  const v = document.getElementById(id).value;
+  return Number(String(v).replace(",", ".")) || 0;
+}
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.style.display = "block";
+  setTimeout(()=>t.style.display="none",1800);
+}
+function getConfig(){
+  const cfg = {};
+  Object.keys(defaults).forEach(k => cfg[k] = nval(k) || defaults[k]);
+  return cfg;
+}
+function salvarConfig(){
+  const cfg = {};
+  Object.keys(defaults).forEach(k => cfg[k] = document.getElementById(k).value);
+  localStorage.setItem("calc_config_v20", JSON.stringify(cfg));
+}
+function carregarConfig(){
+  const saved = JSON.parse(localStorage.getItem("calc_config_v20") || "{}");
+  Object.keys(defaults).forEach(k => {
+    document.getElementById(k).value = saved[k] ?? defaults[k];
+    document.getElementById(k).addEventListener("input", salvarConfig);
+  });
+}
+function salvarNegociacao(){
+  capturarItensDaTela();
+  const neg = {
+    itens,
+    pagamento,
+    parcelas: document.getElementById("parcelas").value,
+    descontoCombo: document.getElementById("descontoCombo").value
+  };
+  localStorage.setItem("calc_negociacao_v20", JSON.stringify(neg));
+}
+function carregarNegociacao(){
+  const saved = JSON.parse(localStorage.getItem("calc_negociacao_v20") || "{}");
+  if(saved.itens && Array.isArray(saved.itens) && saved.itens.length){
+    itens = saved.itens.slice(0,5);
+  }
+  pagamento = saved.pagamento || "cartao";
+  desenharItens();
+  document.getElementById("parcelas").value = saved.parcelas || "10";
+  document.getElementById("descontoCombo").value = saved.descontoCombo || "";
+  setPagamento(pagamento, false);
+}
+function capturarItensDaTela(){
+  const novos = [];
+  for(let i=0;i<itens.length;i++){
+    const cat = document.getElementById(`cat_${i}`);
+    const custo = document.getElementById(`custo_${i}`);
+    if(cat && custo){
+      novos.push({categoria:cat.value, custo:custo.value});
+    }
+  }
+  itens = novos.length ? novos : [{categoria:"reforma_colchao", custo:""}];
+}
+function desenharItens(){
+  const box = document.getElementById("itens");
+  box.innerHTML = "";
+  itens.forEach((item, i) => {
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `
+      <div class="item-head">
+        <span>Produto ${i+1}</span>
+        ${i>0 ? `<button class="remove" onclick="removerItem(${i})">remover</button>` : ""}
+      </div>
+      <div class="grid2">
+        <div>
+          <label>Categoria</label>
+          <select id="cat_${i}">
+            ${categorias.map(([v,l])=>`<option value="${v}" ${item.categoria===v?"selected":""}>${l}</option>`).join("")}
+          </select>
+        </div>
+        <div>
+          <label>Custo R$</label>
+          <input id="custo_${i}" type="number" inputmode="decimal" placeholder="Ex: 600" value="${item.custo ?? ""}" />
+        </div>
+      </div>
+    `;
+    box.appendChild(div);
+  });
+  document.getElementById("contadorItens").textContent = `${itens.length}/5`;
+  itens.forEach((_, i) => {
+    document.getElementById(`cat_${i}`).addEventListener("change", salvarNegociacao);
+    document.getElementById(`custo_${i}`).addEventListener("input", salvarNegociacao);
+  });
+}
+function adicionarItem(){
+  capturarItensDaTela();
+  if(itens.length >= 5){
+    showToast("Limite de 5 produtos.");
+    return;
+  }
+  itens.push({categoria:"reforma_colchao", custo:""});
+  desenharItens();
+  salvarNegociacao();
+}
+function removerItem(i){
+  capturarItensDaTela();
+  itens.splice(i,1);
+  if(!itens.length) itens = [{categoria:"reforma_colchao", custo:""}];
+  desenharItens();
+  calcular();
+  salvarNegociacao();
+}
+function setPagamento(tipo, save=true){
+  pagamento = tipo;
+  document.getElementById("btnPix").classList.toggle("active", tipo==="pix");
+  document.getElementById("btnCartao").classList.toggle("active", tipo==="cartao");
+  document.getElementById("parcelasWrap").classList.toggle("hidden", tipo!=="cartao");
+  if(save) salvarNegociacao();
+}
+function calcular(){
+  capturarItensDaTela();
+  const cfg = getConfig();
+  let custoTotal = 0, subtotalMargem = 0;
+
+  const detalhesPorItem = [];
+
+  itens.forEach(item => {
+    const custo = Number(String(item.custo).replace(",", ".")) || 0;
+    if(custo <= 0) return;
+    const margem = cfg["margem_" + item.categoria] || 0;
+
+    // Lógica definida pelo Jacson:
+    // custo 600 e margem 40% => subtotal 1000
+    // subtotal = custo / (1 - margem)
+    const precoComMargem = custo / (1 - (margem/100));
+    const royaltyItem = precoComMargem * (cfg.royaltyPerc/100);
+
+    custoTotal += custo;
+    subtotalMargem += precoComMargem;
+
+    detalhesPorItem.push({
+      categoria: item.categoria,
+      custo,
+      margem,
+      precoComMargem,
+      royaltyItem,
+      totalComRoyalty: precoComMargem + royaltyItem
+    });
+  });
+
+  const royaltyValor = detalhesPorItem.reduce((acc, item) => acc + item.royaltyItem, 0);
+  let valorAntesTaxa = subtotalMargem + royaltyValor;
+
+  let taxaValor = 0;
+  if(pagamento === "cartao"){
+    taxaValor = valorAntesTaxa * (cfg.taxaCartao/100);
+  }
+
+  let valorFinal = valorAntesTaxa + taxaValor;
+
+  // Pix não aplica desconto automático.
+  // O campo "Desconto Pix sugestão %" fica apenas como referência nas configurações.
+  // Qualquer desconto real deve ser lançado manualmente no campo "Desconto combo/manual R$".
+  let descontoPixValor = 0;
+
+  const descontoCombo = nval("descontoCombo");
+  valorFinal = Math.max(0, valorFinal - descontoCombo);
+
+  const descontosValor = descontoPixValor + descontoCombo;
+
+  const lucroEstimado = Math.max(0, valorFinal - custoTotal - royaltyValor - taxaValor);
+  const margemReal = valorFinal > 0 ? (lucroEstimado / valorFinal) * 100 : 0;
+  const impactoMeta = cfg.metaMensal > 0 ? (valorFinal / cfg.metaMensal) * 100 : 0;
+
+  const parcelas = pagamento === "cartao" ? (Number(document.getElementById("parcelas").value) || 1) : 1;
+  const valorParcela = pagamento === "cartao" ? valorFinal / parcelas : 0;
+
+  ultimoResultado = {custoTotal, subtotalMargem, royaltyValor, taxaValor, descontoPixValor, descontoCombo, descontosValor, valorFinal, lucroEstimado, margemReal, impactoMeta, detalhesPorItem, valorParcela, parcelas};
+
+  document.getElementById("valorCliente").textContent = money(valorFinal);
+  document.getElementById("custoTotal").textContent = money(custoTotal);
+  document.getElementById("lucroEstimado").textContent = money(lucroEstimado);
+  document.getElementById("lucroDestaque").textContent = money(lucroEstimado);
+  document.getElementById("margemReal").textContent = pct(margemReal);
+  document.getElementById("impactoMeta").textContent = pct(impactoMeta);
+  document.getElementById("subtotalMargem").textContent = money(subtotalMargem);
+  document.getElementById("royaltyValor").textContent = money(royaltyValor);
+  document.getElementById("taxaValor").textContent = money(taxaValor);
+  document.getElementById("descontosValor").textContent = money(descontosValor);
+
+  const parcelaBox = document.getElementById("parcelaBox");
+  if(pagamento === "cartao" && valorFinal > 0){
+    parcelaBox.style.display = "block";
+    document.getElementById("valorParcela").textContent = `${parcelas}x de ${money(valorParcela)}`;
+  } else {
+    parcelaBox.style.display = "none";
+    document.getElementById("valorParcela").textContent = money(0);
+  }
+
+  const detalhesBox = document.getElementById("detalhesItens");
+  detalhesBox.innerHTML = detalhesPorItem.map((d, idx) => {
+    const nome = categorias.find(c=>c[0]===d.categoria)?.[1] || d.categoria;
+    return `
+      <div class="detail-item">
+        <b>${idx+1}. ${nome}</b>
+        <div class="detail-line"><span>Custo</span><strong>${money(d.custo)}</strong></div>
+        <div class="detail-line"><span>Margem categoria</span><strong>${pct(d.margem)}</strong></div>
+        <div class="detail-line"><span>Subtotal com margem</span><strong>${money(d.precoComMargem)}</strong></div>
+        <div class="detail-line"><span>Royalty do item</span><strong>${money(d.royaltyItem)}</strong></div>
+        <div class="detail-line"><span>Total item com royalty</span><strong>${money(d.totalComRoyalty)}</strong></div>
+      </div>
+    `;
+  }).join("");
+
+  const badge = document.getElementById("statusMargem");
+  badge.className = "badge";
+  if(margemReal < cfg.margemMinima){
+    badge.classList.add("danger");
+    badge.textContent = "Margem baixa";
+  } else if(margemReal < cfg.margemBoa){
+    badge.classList.add("warn");
+    badge.textContent = "Margem aceitável";
+  } else {
+    badge.classList.add("good");
+    badge.textContent = "Margem saudável";
+  }
+
+  salvarNegociacao();
+}
+function copiarResumo(){
+  if(!ultimoResultado) calcular();
+  const r = ultimoResultado;
+  capturarItensDaTela();
+
+  const linhas = [];
+  linhas.push("Resumo da negociação");
+  itens.forEach((item,i)=>{
+    const nome = categorias.find(c=>c[0]===item.categoria)?.[1] || item.categoria;
+    const custo = Number(String(item.custo).replace(",", ".")) || 0;
+    if(custo>0) linhas.push(`${i+1}. ${nome} | custo ${money(custo)}`);
+  });
+  linhas.push("");
+  linhas.push(`Valor proposto: ${money(r.valorFinal)}`);
+  linhas.push(`Forma: ${pagamento==="cartao" ? "Cartão em " + document.getElementById("parcelas").value + "x" : "Pix"}`);
+  if(pagamento==="cartao") linhas.push(`Parcela: ${r.parcelas}x de ${money(r.valorParcela)}`);
+  linhas.push(`Custo total: ${money(r.custoTotal)}`);
+  linhas.push(`Margem estimada: ${pct(r.margemReal)}`);
+  linhas.push(`Lucro estimado: ${money(r.lucroEstimado)}`);
+  linhas.push(`Royalty estimado: ${money(r.royaltyValor)}`);
+  if(r.taxaValor>0) linhas.push(`Taxa cartão estimada: ${money(r.taxaValor)}`);
+  if(r.descontosValor>0) linhas.push(`Descontos: ${money(r.descontosValor)}`);
+  linhas.push(`Impacto na meta: ${pct(r.impactoMeta)}`);
+
+  navigator.clipboard.writeText(linhas.join("\n"))
+    .then(()=>showToast("Resumo copiado."))
+    .catch(()=>showToast("Não foi possível copiar."));
+}
+function limparNegociacao(){
+  itens = [{categoria:"reforma_colchao", custo:""}];
+  pagamento = "cartao";
+  document.getElementById("parcelas").value = "10";
+  document.getElementById("descontoCombo").value = "";
+  localStorage.removeItem("calc_negociacao_v20");
+  desenharItens();
+  setPagamento("cartao", false);
+  ultimoResultado = null;
+  document.getElementById("valorCliente").textContent = money(0);
+  document.getElementById("custoTotal").textContent = money(0);
+  document.getElementById("lucroEstimado").textContent = money(0);
+  document.getElementById("lucroDestaque").textContent = money(0);
+  document.getElementById("parcelaBox").style.display = "none";
+  document.getElementById("valorParcela").textContent = money(0);
+  document.getElementById("margemReal").textContent = "0%";
+  document.getElementById("impactoMeta").textContent = "0%";
+  document.getElementById("subtotalMargem").textContent = money(0);
+  document.getElementById("royaltyValor").textContent = money(0);
+  document.getElementById("taxaValor").textContent = money(0);
+  document.getElementById("descontosValor").textContent = money(0);
+  document.getElementById("detalhesItens").innerHTML = "";
+  const badge = document.getElementById("statusMargem");
+  badge.className = "badge warn";
+  badge.textContent = "Aguardando cálculo";
+  showToast("Negociação limpa.");
+}
+["parcelas","descontoCombo"].forEach(id=>{
+  setTimeout(()=>document.getElementById(id).addEventListener("input", salvarNegociacao),0);
+});
+carregarConfig();
+carregarNegociacao();
+</script>
+</body>
+</html>
