@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Assistente SDR - Qualificação de Leads</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #d1d5db;
+      --hot: #ef4444;
+      --warm: #f59e0b;
+      --cold: #3b82f6;
+      --ok: #16a34a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 16px;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding-bottom: 24px;
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 18px;
+      line-height: 1.4;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .card h2 {
+      font-size: 18px;
+      margin: 0 0 10px;
+    }
+
+    .script {
+      background: #f9fafb;
+      border-left: 4px solid #9ca3af;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 15px;
+      line-height: 1.45;
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px 0;
+      border-bottom: 1px solid #eef0f2;
+      cursor: pointer;
+      line-height: 1.35;
+      font-size: 15px;
+    }
+
+    label:last-child { border-bottom: none; }
+
+    input[type="checkbox"] {
+      margin-top: 2px;
+      transform: scale(1.15);
+    }
+
+    .result {
+      position: static;
+      border: 2px solid var(--border);
+      margin-bottom: 14px;
+    }
+
+    .status {
+      font-size: 24px;
+      font-weight: bold;
+      margin: 8px 0;
+    }
+
+    .hot { color: var(--hot); }
+    .warm { color: var(--warm); }
+    .cold { color: var(--cold); }
+
+    .score-line {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .score-box {
+      background: #f9fafb;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .score-box strong {
+      display: block;
+      font-size: 20px;
+      margin-top: 4px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 13px 14px;
+      cursor: pointer;
+      font-weight: bold;
+      background: #111827;
+      color: white;
+      width: 100%;
+    }
+
+    button.secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    textarea, input[type="text"] {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 15px;
+      font-family: Arial, sans-serif;
+    }
+
+    textarea { min-height: 90px; resize: vertical; }
+
+    .recommendation {
+      background: #f9fafb;
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 10px;
+      line-height: 1.45;
+    }
+
+    .small {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 10px; }
+      h1 { font-size: 21px; line-height: 1.2; }
+      .subtitle { font-size: 14px; }
+      .status { font-size: 23px; }
+      .score-line { grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+      .score-box { padding: 8px 4px; font-size: 12px; }
+      .score-box strong { font-size: 18px; }
+      .card { padding: 13px; border-radius: 14px; }
+      .card h2 { font-size: 17px; }
+      .script { font-size: 14px; }
+      label { font-size: 14px; padding: 11px 0; }
+      input[type="text"], textarea { font-size: 16px; }
+      .actions { flex-direction: column; }
+    }
+      h1 { font-size: 21px; }
+      .status { font-size: 24px; }
+      .score-line { grid-template-columns: 1fr; }
+      .card { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Assistente SDR — Qualificação Leve</h1>
+    <div class="subtitle">
+      Formulário para usar durante o atendimento no WhatsApp. O SDR não precisa perguntar tudo. Basta seguir o sentido da conversa e marcar as respostas mais parecidas.
+    </div>
+
+    <div class="card">
+      <h2>Dados rápidos do atendimento</h2>
+      <input type="text" id="clientName" placeholder="Nome do cliente" oninput="calculate()" />
+      <br><br>
+      <input type="text" id="mattressInfo" placeholder="Ex: casal padrão, Castor, 12 anos, molas, afundado..." oninput="calculate()" />
+    </div>
+
+    <div class="card">
+      <h2>1) Primeira resposta do cliente</h2>
+      <div class="script">
+        <strong>🎯 Sentido da pergunta</strong><br>
+        Entender se o cliente só quer preço ou se aceita conversar um pouco.
+        <br><br>
+        <strong>💬 Sugestão de pergunta</strong><br> “Depende bastante da estrutura do colchão 😊 Em muitos casos compensa muito. Me fala rapidinho: qual é o principal problema dele hoje?”
+      </div>
+      <label><input type="checkbox" data-type="hot" data-points="2"> Responde com detalhes e explica o problema</label>
+      <label><input type="checkbox" data-type="warm" data-points="1"> Responde pouco, mas continua conversando</label>
+      <label><input type="checkbox" data-type="cold" data-points="2"> Só insiste em preço e não dá contexto</label>
+    </div>
+
+    <div class="card">
+      <h2>2) Qualidade percebida do colchão</h2>
+      <div class="script">
+        <strong>🎯 Sentido da pergunta</strong><br>
+        Descobrir se o colchão tem valor real ou percebido para reforma.
+        <br><br>
+        <strong>💬 Sugestão de pergunta</strong><br> “Esse colchão era daqueles melhorzinhos quando vocês compraram?”
+      </div>
+      <label><input type="checkbox" data-type="hot" data-points="3"> “Era muito bom”, “foi caro”, “é de marca boa”, “durou muitos anos”</label>
+      <label><input type="checkbox" data-type="warm" data-points="1"> “Acho que era bom”, “não sei muito”, “era intermediário”</label>
+      <label><input type="checkbox" data-type="cold" data-points="2"> “Era simples”, “foi barato”, “não sei”, “não tem marca”</label>
+    </div>
+
+    <div class="card">
+      <h2>3) Tipo de problema</h2>
+      <div class="script">
+        <strong>🎯 Sentido da pergunta</strong><br>
+        Identificar se existe uma dor real que justifique visita.
+        <br><br>
+        <strong>💬 Sugestão de pergunta</strong><br> “O incômodo maior é afundamento, tecido gasto, borda mole ou desconforto?”
+      </div>
+      <label><input type="checkbox" data-type="hot" data-points="2"> Problema claro: afundamento, tecido gasto, borda ruim, molas, dor ao dormir</label>
+      <label><input type="checkbox" data-type="warm" data-points="1"> Problema existe, mas não parece urgente</label>
+      <label><input type="checkbox" data-type="cold" data-points="2"> Só curiosidade, estética leve ou não sabe dizer o problema</label>
+    </div>
+
+    <div class="card">
+      <h2>4) Relação com o colchão</h2>
+      <div class="script">
+        <strong>🎯 Sentido da pergunta</strong><br>
+        Descobrir se o cliente quer recuperar algo que gosta ou apenas comparar preço.
+        <br><br>
+        <strong>💬 Sugestão de pergunta</strong><br> “Vocês gostam do conforto dele ainda ou já estavam mais pensando em trocar?”
+      </div>
+      <label><input type="checkbox" data-type="hot" data-points="3"> Gosta do colchão e quer recuperar</label>
+      <label><input type="checkbox" data-type="hot" data-points="3"> Tem valor emocional, lembrança, costume ou história com o colchão</label>
+      <label><input type="checkbox" data-type="warm" data-points="1"> Está em dúvida entre reformar e comprar novo</label>
+      <label><input type="checkbox" data-type="cold" data-points="2"> Quer trocar, mas está vendo se reforma fica muito barato</label>
+    </div>
+
+    <div class="card">
+      <h2>5) Momento de decisão</h2>
+      <div class="script">
+        <strong>🎯 Sentido da pergunta</strong><br>
+        Entender urgência sem pressionar.
+        <br><br>
+        <strong>💬 Sugestão de pergunta</strong><br> “Vocês querem resolver isso logo ou ainda estão só pesquisando possibilidades?”
+      </div>
+      <label><input type="checkbox" data-type="hot" data-points="2"> Quer resolver logo / está incomodando bastante</label>
+      <label><input type="checkbox" data-type="warm" data-points="1"> Está pesquisando, mas demonstra interesse real</label>
+      <label><input type="checkbox" data-type="cold" data-points="2"> Sem previsão / só pesquisando / talvez mais pra frente</label>
+    </div>
+
+    <div class="card">
+      <h2>6) Perfil de valor x preço</h2>
+      <div class="script">
+        <strong>🎯 Sentido da pergunta</strong><br>
+        Perceber se o cliente valoriza qualidade ou só menor preço.
+        <br><br>
+        <strong>💬 Sugestão de pergunta</strong><br> “A ideia de vocês é recuperar um colchão bom ou encontrar a opção mais econômica possível?”
+      </div>
+      <label><input type="checkbox" data-type="hot" data-points="3"> Valoriza qualidade, durabilidade, conforto ou personalização</label>
+      <label><input type="checkbox" data-type="warm" data-points="1"> Quer custo-benefício, mas aceita entender qualidade</label>
+      <label><input type="checkbox" data-type="cold" data-points="3"> Busca somente o menor preço</label>
+    </div>
+
+    <div class="card">
+      <h2>7) Abertura para áudio ou explicação rápida</h2>
+      <div class="script">
+        <strong>🎯 Sentido da pergunta</strong><br>
+        Testar abertura e ganhar velocidade no diagnóstico.
+        <br><br>
+        <strong>💬 Sugestão de pergunta</strong><br> “Se quiser, posso te explicar rapidinho por áudio e já te oriento melhor 😊”
+      </div>
+      <label><input type="checkbox" data-type="hot" data-points="2"> Aceita áudio, manda áudio ou conversa com boa abertura</label>
+      <label><input type="checkbox" data-type="warm" data-points="1"> Prefere texto, mas responde bem</label>
+      <label><input type="checkbox" data-type="cold" data-points="1"> Responde seco, demora muito ou para de interagir</label>
+    </div>
+
+    <div class="card">
+      <h2>Frases prontas conforme classificação</h2>
+      <div class="script"><strong>Lead quente:</strong><br>“Pelo que você me contou, parece ser um caso que vale bastante uma avaliação presencial, principalmente se a estrutura ainda estiver boa.”</div>
+      <div class="script"><strong>Lead morno:</strong><br>“Dá para avaliar algumas possibilidades. A visita ajuda a entender se compensa reformar ou se faz mais sentido um novo.”</div>
+      <div class="script"><strong>Lead frio:</strong><br>“Posso te passar uma orientação inicial por aqui e deixar registrado para acompanharmos. Assim você entende melhor antes de agendar uma visita.”</div>
+    </div>
+
+    <div class="card">
+      <h2>Observações do SDR</h2>
+      <textarea id="notes" placeholder="Anote frases importantes: marca, idade, motivo, urgência, objeção, valor emocional, se já pesquisou colchão novo..." oninput="calculate()"></textarea>
+    </div>
+
+    <div class="card result">
+      <h2>Resultado do Lead</h2>
+      <div id="status" class="status warm">🌤️ Morno</div>
+      <div id="summary">Marque as respostas prováveis conforme a conversa evolui.</div>
+
+      <div class="score-line">
+        <div class="score-box">Quente<strong id="hotScore">0</strong></div>
+        <div class="score-box">Morno<strong id="warmScore">0</strong></div>
+        <div class="score-box">Frio<strong id="coldScore">0</strong></div>
+      </div>
+
+      <div id="recommendation" class="recommendation">
+        Comece com uma resposta rápida e faça apenas 1 pergunta leve para abrir a conversa.
+      </div>
+
+      <div id="decisionBox" class="recommendation" style="margin-top:10px; border:2px solid #d1d5db;">
+        <strong>📌 Decisão sugerida:</strong><br>
+        Ainda sem definição.
+      </div>
+
+      <div class="actions">
+        <button onclick="copySummary()">Copiar resumo</button>
+        <button class="secondary" onclick="resetForm()">Limpar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const checks = document.querySelectorAll('input[type="checkbox"]');
+    checks.forEach(check => check.addEventListener('change', calculate));
+
+    function calculate() {
+      let hot = 0, warm = 0, cold = 0;
+
+      checks.forEach(check => {
+        if (check.checked) {
+          const points = Number(check.dataset.points || 0);
+          const type = check.dataset.type;
+          if (type === 'hot') hot += points;
+          if (type === 'warm') warm += points;
+          if (type === 'cold') cold += points;
+        }
+      });
+
+      document.getElementById('hotScore').textContent = hot;
+      document.getElementById('warmScore').textContent = warm;
+      document.getElementById('coldScore').textContent = cold;
+
+      const status = document.getElementById('status');
+      const summary = document.getElementById('summary');
+      const recommendation = document.getElementById('recommendation');
+
+      status.className = 'status';
+
+      let diagnostic = '';
+      let profile = '';
+      let operational = '';
+      let emotional = '';
+
+      if (hot >= 14 && warm >= 3 && cold <= 1) {
+        status.textContent = '💎 Lead Elite';
+        status.classList.add('hot');
+        summary.textContent = 'Lead extremamente qualificado e altamente favorável para fechamento.';
+
+        profile = 'Cliente demonstra alto reconhecimento de valor, forte dor percebida e excelente abertura comercial.';
+        operational = 'Visita altamente estratégica com forte chance de fechamento e boa margem.';
+        emotional = 'Cliente possui conexão emocional ou percepção muito clara de qualidade e conforto.';
+
+        recommendation.innerHTML = '<strong>Ação sugerida:</strong> prioridade máxima de visita e abordagem consultiva premium.';
+
+      } else if (hot >= 12 && cold <= 2) {
+        status.textContent = '🔥 Quente Premium';
+        status.classList.add('hot');
+        summary.textContent = 'Lead extremamente forte para fechamento.';
+
+        profile = 'Cliente demonstra forte percepção de valor e alta abertura para solução consultiva.';
+        operational = 'Alta probabilidade de visita lucrativa e boa conversão presencial.';
+        emotional = 'Possível apego ao conforto, reconhecimento da qualidade do colchão ou desejo de preservar algo bom.';
+
+        recommendation.innerHTML = '<strong>Ação sugerida:</strong> priorizar visita rapidamente e trabalhar fechamento consultivo com segurança.';
+
+      } else if (hot >= 9 && warm >= 2 && cold <= 3) {
+        status.textContent = '🔥 Quente';
+        status.classList.add('hot');
+        summary.textContent = 'Lead com excelente potencial para visita presencial.';
+
+        profile = 'Cliente aberto ao diálogo, demonstra dor real e valoriza qualidade ou conforto.';
+        operational = 'Boa chance de conversão presencial com ticket saudável.';
+        emotional = 'Provável percepção positiva do colchão atual ou comparação negativa com colchões baratos.';
+
+        recommendation.innerHTML = '<strong>Ação sugerida:</strong> agendar visita presencial como prioridade.';
+
+      } else if (hot >= 8 && cold >= 4 && warm >= 2) {
+        status.textContent = '🔥 Quente Sensível a Preço';
+        status.classList.add('warm');
+        summary.textContent = 'Lead com bom potencial, mas forte sensibilidade financeira.';
+
+        profile = 'Cliente demonstra interesse real, porém faz forte comparação de preço.';
+        operational = 'Visita pode converter se a percepção de valor for bem trabalhada.';
+        emotional = 'Existe dor real, mas misturada com insegurança financeira ou medo de errar.';
+
+        recommendation.innerHTML = '<strong>Ação sugerida:</strong> usar abordagem consultiva focada em qualidade, durabilidade e comparação inteligente.';
+
+      } else if (hot >= 7 && warm >= 4 && cold <= 4) {
+        status.textContent = '🌤️ Morno Forte';
+        status.classList.add('warm');
+        summary.textContent = 'Lead promissor, mas ainda avaliando possibilidades.';
+
+        profile = 'Cliente interessado, porém ainda racionalizando a decisão.';
+        operational = 'Pode converter bem dependendo da abordagem consultiva e da percepção de valor criada.';
+        emotional = 'Existe abertura emocional ou interesse técnico, mas ainda sem decisão consolidada.';
+
+        recommendation.innerHTML = '<strong>Ação sugerida:</strong> oferecer áudio curto, reforçar valor da estrutura e avaliar se visita faz sentido.';
+
+      } else if (warm >= 7 && hot >= 4 && cold <= 3) {
+        status.textContent = '🌤️ Morno Evoluindo';
+        status.classList.add('warm');
+        summary.textContent = 'Lead começando a ganhar confiança durante a conversa.';
+
+        profile = 'Cliente inicialmente neutro, mas demonstrando abertura gradual.';
+        operational = 'Pode se transformar em visita produtiva dependendo da condução do SDR.';
+        emotional = 'A conexão emocional ainda é moderada, mas existe curiosidade e interesse crescente.';
+
+        recommendation.innerHTML = '<strong>Ação sugerida:</strong> aprofundar mais um pouco antes de decidir pela visita.';
+
+      } else if (warm >= 6 && hot <= 6 && cold <= 4) {
+        status.textContent = '🌤️ Morno';
+        status.classList.add('warm');
+        summary.textContent = 'Lead neutro, ainda sem sinais fortes de urgência.';
+
+        profile = 'Cliente conversa bem, mas ainda está explorando possibilidades.';
+        operational = 'Visita pode converter, porém ainda existe risco de baixa maturidade de compra.';
+        emotional = 'Pouca emoção percebida até o momento. Cliente ainda em fase de entendimento.';
+
+        recommendation.innerHTML = '<strong>Ação sugerida:</strong> aprofundar levemente a conversa antes de definir visita.';
+
+      } else if (cold >= 6 && hot >= 5) {
+        status.textContent = '⚖️ Conflitante';
+        status.classList.add('warm');
+        summary.textContent = 'Lead apresenta sinais fortes positivos e negativos ao mesmo tempo.';
+
+        profile = 'Cliente possui dor ou interesse, mas também muita resistência ou insegurança.';
+        operational = 'Necessário cautela antes de consumir visita presencial.';
+        emotional = 'Pode existir frustração, medo financeiro ou excesso de comparação.';
+
+        recommendation.innerHTML = '<strong>Ação sugerida:</strong> usar áudio estratégico para destravar percepção antes de agendar.';
+
+      } else if (cold >= 5 && warm >= 3 && hot <= 5) {
+        status.textContent = '❄️ Frio com Potencial';
+        status.classList.add('cold');
+        summary.textContent = 'Lead resistente no momento, mas ainda recuperável.';
+
+        profile = 'Cliente mais defensivo, focado em preço ou com baixa urgência atual.';
+        operational = 'Visita presencial agora pode consumir tempo sem boa probabilidade de fechamento.';
+        emotional = 'Pouco envolvimento emocional identificado até o momento.';
+
+        recommendation.innerHTML = '<strong>Ação sugerida:</strong> trabalhar online, mandar conteúdo e manter acompanhamento leve.';
+
+      } else if (cold >= 7 && hot <= 3) {
+        status.textContent = '❄️ Frio';
+        status.classList.add('cold');
+        summary.textContent = 'Lead com baixa probabilidade imediata de fechamento.';
+
+        profile = 'Cliente demonstra foco extremo em preço ou pouca valorização do produto.';
+        operational = 'Alta chance de visita improdutiva neste momento.';
+        emotional = 'Sem sinais relevantes de conexão emocional ou urgência forte.';
+
+        recommendation.innerHTML = '<strong>Ação sugerida:</strong> evitar visita presencial agora e manter apenas acompanhamento futuro.';
+
+      } else if (hot >= 6 && cold >= 5) {
+        status.textContent = '⚖️ Misto';
+        status.classList.add('warm');
+        summary.textContent = 'Lead com sinais contraditórios.';
+
+        profile = 'Cliente demonstra interesse, mas também resistência forte em preço ou decisão.';
+        operational = 'Necessário avaliar cuidadosamente se a visita vale o consumo operacional.';
+        emotional = 'Pode existir dor real, porém misturada com insegurança financeira ou comparação excessiva.';
+
+        recommendation.innerHTML = '<strong>Ação sugerida:</strong> usar áudio curto para tentar destravar percepção de valor antes da visita.';
+
+      } else if (hot >= 5 && warm >= 5 && cold >= 5) {
+        status.textContent = '🌪️ Complexo';
+        status.classList.add('warm');
+        summary.textContent = 'Lead com comportamento muito variável durante a conversa.';
+
+        profile = 'Cliente alterna entre interesse, dúvida e resistência.';
+        operational = 'Ainda difícil prever se a visita terá retorno positivo.';
+        emotional = 'Possível cliente emocionalmente indeciso ou muito racionalizador.';
+
+        recommendation.innerHTML = '<strong>Ação sugerida:</strong> evitar pressa. Trabalhar confiança antes da visita.';
+
+      } else if (hot >= 4 && warm >= 3 && cold <= 2) {
+        status.textContent = '✨ Potencial Oculto';
+        status.classList.add('warm');
+        summary.textContent = 'Lead discreto, mas com sinais positivos interessantes.';
+
+        profile = 'Cliente responde pouco, porém demonstra alguns sinais importantes de valor ou dor.';
+        operational = 'Pode surpreender positivamente numa abordagem consultiva leve.';
+        emotional = 'Conexão emocional ainda tímida, mas presente.';
+
+        recommendation.innerHTML = '<strong>Ação sugerida:</strong> fazer áudio curto antes de decidir visita.';
+
+      } else {
+        status.textContent = '🌫️ Indefinido';
+        status.classList.add('warm');
+        summary.textContent = 'Ainda faltam sinais suficientes para classificar com segurança.';
+
+        profile = 'Conversa ainda superficial ou com poucas informações úteis.';
+        operational = 'Ainda cedo para decidir se vale deslocamento presencial.';
+        emotional = 'Sem leitura emocional clara até o momento.';
+
+        recommendation.innerHTML = '<strong>Ação sugerida:</strong> fazer mais 1 ou 2 perguntas leves antes de decidir.';
+      }
+
+      diagnostic = `
+        <br><br>
+        <strong>🧠 Perfil percebido:</strong><br>${profile}
+        <br><br>
+        <strong>📈 Leitura operacional:</strong><br>${operational}
+        <br><br>
+        <strong>💭 Leitura emocional:</strong><br>${emotional}
+      `;
+
+      recommendation.innerHTML += diagnostic;
+
+      const decisionBox = document.getElementById('decisionBox');
+
+      if (status.textContent.includes('Quente Premium')) {
+        decisionBox.innerHTML = '<strong>✅ Decisão sugerida:</strong><br><strong>Marcar visita imediatamente.</strong><br>Lead com alta chance de fechamento e boa probabilidade de visita lucrativa.';
+
+      } else if (status.textContent.includes('🔥 Quente')) {
+        decisionBox.innerHTML = '<strong>✅ Decisão sugerida:</strong><br><strong>Marcar visita.</strong><br>Lead com boa abertura, dor clara e potencial de conversão presencial.';
+
+      } else if (status.textContent.includes('Morno Forte')) {
+        decisionBox.innerHTML = '<strong>🟡 Decisão sugerida:</strong><br><strong>Avaliar visita ou fazer áudio estratégico.</strong><br>Pode converter dependendo da percepção de valor criada.';
+
+      } else if (status.textContent.includes('🌤️ Morno')) {
+        decisionBox.innerHTML = '<strong>🟡 Decisão sugerida:</strong><br><strong>Continuar atendimento online.</strong><br>Cliente ainda precisa amadurecer mais a decisão.';
+
+      } else if (status.textContent.includes('Frio com Potencial')) {
+        decisionBox.innerHTML = '<strong>🔵 Decisão sugerida:</strong><br><strong>Não marcar visita agora.</strong><br>Fazer atendimento online, conteúdo e acompanhamento leve.';
+
+      } else if (status.textContent.includes('❄️ Frio')) {
+        decisionBox.innerHTML = '<strong>⛔ Decisão sugerida:</strong><br><strong>Evitar visita presencial.</strong><br>Alta chance de consumir operação sem retorno imediato.';
+
+      } else if (status.textContent.includes('⚖️ Misto')) {
+        decisionBox.innerHTML = '<strong>🟠 Decisão sugerida:</strong><br><strong>Fazer áudio antes de decidir.</strong><br>Lead apresenta sinais positivos e negativos ao mesmo tempo.';
+
+      } else {
+        decisionBox.innerHTML = '<strong>⚪ Decisão sugerida:</strong><br><strong>Coletar mais informações.</strong><br>Ainda não existem sinais suficientes para definir a melhor ação.';
+      }
+    }
+
+    function copySummary() {
+      const name = document.getElementById('clientName').value || 'Cliente não informado';
+      const info = document.getElementById('mattressInfo').value || 'Informações do colchão não informadas';
+      const notes = document.getElementById('notes').value || 'Sem observações adicionais';
+      const status = document.getElementById('status').textContent;
+      const hot = document.getElementById('hotScore').textContent;
+      const warm = document.getElementById('warmScore').textContent;
+      const cold = document.getElementById('coldScore').textContent;
+      const rec = document.getElementById('recommendation').innerText;
+
+      const text = `Resumo SDR
+Cliente: ${name}
+Colchão/contexto: ${info}
+Classificação: ${status}
+Pontuação: Quente ${hot} | Morno ${warm} | Frio ${cold}
+Ação sugerida: ${rec}
+Observações: ${notes}`;
+
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Resumo copiado!');
+      }).catch(() => {
+        alert('Não foi possível copiar automaticamente. Selecione e copie manualmente.');
+      });
+    }
+
+    function resetForm() {
+      if (!confirm('Limpar todos os campos?')) return;
+      document.getElementById('clientName').value = '';
+      document.getElementById('mattressInfo').value = '';
+      document.getElementById('notes').value = '';
+      checks.forEach(check => check.checked = false);
+      calculate();
+    }
+
+    calculate();
+  </script>
+</body>
+</html>
