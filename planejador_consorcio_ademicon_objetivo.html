@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planejador de Consórcio Ademicon</title>
+  <style>
+    :root{
+      --bg:#f3f6fb;--bg2:#e8eef7;--card:#ffffff;--card2:#f8fafc;--input:#ffffff;--text:#0f172a;--muted:#526173;--line:#d8e0eb;
+      --thead:#eef4fb;--sticky:#ffffff;--row:#fbfdff;--shadow:0 10px 30px rgba(15,23,42,.10);
+      --accent:#16a34a;--accentText:#052e16;--accent2:#0284c7;--accent2Text:#ecfeff;--neutral:#475569;--gold:#f4c542;
+      --pos:#15803d;--neg:#dc2626;
+    }
+    @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0f172a;--bg2:#111827;--card:#111827;--card2:#1f2937;--input:#0b1220;--text:#f8fafc;--muted:#cbd5e1;--line:#334155;--thead:#172033;--sticky:#111827;--row:#0b1220;--shadow:0 10px 30px rgba(0,0,0,.25);--accent:#22c55e;--accentText:#052e16;--accent2:#38bdf8;--accent2Text:#06111f;--neutral:#475569;--pos:#86efac;--neg:#fda4af}}
+    :root[data-theme="dark"]{--bg:#0f172a;--bg2:#111827;--card:#111827;--card2:#1f2937;--input:#0b1220;--text:#f8fafc;--muted:#cbd5e1;--line:#334155;--thead:#172033;--sticky:#111827;--row:#0b1220;--shadow:0 10px 30px rgba(0,0,0,.25);--accent:#22c55e;--accentText:#052e16;--accent2:#38bdf8;--accent2Text:#06111f;--neutral:#475569;--pos:#86efac;--neg:#fda4af}
+    *{box-sizing:border-box} body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,var(--bg),var(--bg2));color:var(--text);min-height:100vh}
+    header{padding:18px 16px;background:color-mix(in srgb, var(--bg) 90%, transparent);position:sticky;top:0;z-index:5;border-bottom:1px solid var(--line);backdrop-filter:blur(10px)}
+    .headerRow{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px}.titleBox h1{font-size:22px;margin:0 0 6px}.titleBox p{margin:0;color:var(--muted);font-size:14px;line-height:1.35}.brand{color:var(--gold);font-weight:900}.themeBox{display:flex;align-items:center;gap:8px;white-space:nowrap}.themeBox label{margin:0;text-transform:none;letter-spacing:0;font-size:12px}.themeBox select{border:1px solid var(--line);background:var(--input);color:var(--text);border-radius:12px;padding:10px 12px;font-weight:700;outline:none}
+    main{max-width:1180px;margin:0 auto;padding:16px}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .card{background:color-mix(in srgb, var(--card) 96%, transparent);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);margin-bottom:16px}.sectionTitle{font-size:16px;font-weight:900;margin:0 0 12px;color:var(--text)}
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-weight:700;text-transform:uppercase;letter-spacing:.02em} input,select{width:100%;border:1px solid var(--line);background:var(--input);color:var(--text);border-radius:12px;padding:12px;font-size:16px;outline:none} input:focus,select:focus{border-color:var(--accent2);box-shadow:0 0 0 3px color-mix(in srgb, var(--accent2) 20%, transparent)}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0} button{border:0;border-radius:12px;padding:12px 16px;font-weight:800;cursor:pointer;background:var(--accent);color:var(--accentText);font-size:14px}button.secondary{background:var(--accent2);color:var(--accent2Text)}button.dark{background:#94a3b8;color:white}.note{font-size:13px;color:var(--muted);line-height:1.45;margin:10px 0 0}.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin:16px 0}.kpi{border:1px solid var(--line);border-radius:16px;padding:14px;background:linear-gradient(135deg,color-mix(in srgb,var(--card2) 92%,var(--accent2) 8%),var(--card));box-shadow:var(--shadow)}.kpi span{display:block;font-size:13px;color:var(--muted);margin-bottom:8px}.kpi strong{display:block;font-size:21px}.kpi.big{background:linear-gradient(135deg,color-mix(in srgb,var(--card2) 82%,var(--accent) 18%),var(--card))}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.advancedBox{margin-top:14px;border:1px solid var(--line);border-radius:14px;padding:12px;background:color-mix(in srgb,var(--card2) 82%,transparent)}.advancedBox summary{cursor:pointer;font-weight:900;color:var(--text);padding:4px}.advancedBox[open] summary{margin-bottom:8px}.campoOculto{display:none!important}.tab{background:var(--card2);color:var(--text);border:1px solid var(--line)}.tab.active{background:var(--accent);color:var(--accentText)}.hidden{display:none!important}
+    .stickySummary{position:sticky;top:77px;z-index:4;background:color-mix(in srgb,var(--card) 94%,transparent);border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:-4px 0 16px;box-shadow:var(--shadow);backdrop-filter:blur(10px);display:flex;gap:12px;overflow:auto;white-space:nowrap}.stickySummary span{font-size:13px;color:var(--muted)}.stickySummary strong{color:var(--text)}
+    .tableTools{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}.goMonth{display:flex;align-items:end;gap:8px}.goMonth input{width:110px}.tableHint{font-size:12px;color:var(--muted);margin:0}
+    .tableWrap{overflow:auto;border:1px solid var(--line);border-radius:16px;background:var(--row);max-height:68vh;position:relative} table{border-collapse:separate;border-spacing:0;width:100%;min-width:1050px} th,td{padding:10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;font-size:13px;background:color-mix(in srgb,var(--row) 96%,transparent)} th{position:sticky;top:0;background:var(--thead);z-index:2;color:var(--text);box-shadow:0 1px 0 var(--line)}td:first-child,th:first-child{text-align:center;position:sticky;left:0;background:var(--sticky);z-index:3;box-shadow:1px 0 0 var(--line)}th:first-child{z-index:5;background:var(--thead)}tr.mes60 td{background:color-mix(in srgb,var(--gold) 18%,var(--row));font-weight:700}tr.mes60 td:first-child{background:color-mix(in srgb,var(--gold) 28%,var(--sticky))}.pos{color:var(--pos);font-weight:700}.neg{color:var(--neg);font-weight:700}.printOnly{display:none}.proposalHeader{border-bottom:2px solid #111;margin-bottom:16px;padding-bottom:10px}.proposalMeta{display:grid;grid-template-columns:repeat(2,1fr);gap:6px 20px;font-size:12px}.disclaimer{font-size:11px;color:#333;line-height:1.4;margin-top:16px;border-top:1px solid #ddd;padding-top:10px}.mini{font-size:12px;color:var(--muted)}
+    @media(max-width:900px){.grid,.grid3{grid-template-columns:repeat(2,1fr)}.kpis{grid-template-columns:repeat(2,1fr)}.headerRow{align-items:flex-start}.kpi strong{font-size:19px}}
+    @media(max-width:560px){main{padding:10px}.grid,.grid3,.kpis{grid-template-columns:1fr}.headerRow{flex-direction:column}.themeBox{width:100%;justify-content:space-between}.actions button{width:100%}.titleBox h1{font-size:20px}}
+    @media print{ @page{size:A4;margin:12mm} body{background:white;color:#111;font-size:12px} header,.actions,.tabs,.note,.noPrint,.stickySummary,.tableTools{display:none!important} main{max-width:none;padding:0}.card,.kpi,.tableWrap{box-shadow:none;border-color:#ddd;background:white;color:#111}.hidden{display:block!important}.printOnly{display:block!important}.kpis{grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}.kpi{break-inside:avoid;padding:9px}.kpi span{font-size:10px;color:#555}.kpi strong{font-size:15px;color:#111}.tableWrap{max-height:none;overflow:visible;border:0} table{min-width:0;width:100%;font-size:9px;border-collapse:collapse} th,td{color:#111;border-color:#ddd;background:white!important;padding:4px;font-size:8.5px;position:static!important;box-shadow:none!important} th{background:#eee!important}.card{padding:0;border:0;margin:0 0 8px}.sectionTitle{font-size:14px;margin:8px 0}.printBreak{page-break-before:always}}
+  </style>
+</head>
+<body>
+<header><div class="headerRow"><div class="titleBox"><h1>Planejador de Consórcio <span class="brand">Ademicon</span></h1><p>Atendimento rápido + proposta em PDF, com regras ajustáveis da Ademicon.</p></div><div class="themeBox"><label for="tema">Tema</label><select id="tema" onchange="aplicarTema(this.value,true)"><option value="auto">📱 Automático</option><option value="light">☀️ Claro</option><option value="dark">🌙 Escuro</option></select></div></div></header>
+<main>
+  <div class="printOnly proposalHeader">
+    <h1>Simulação Estratégica de Consórcio</h1>
+    <div class="proposalMeta">
+      <div><strong>Cliente:</strong> <span id="pCliente"></span></div><div><strong>Data:</strong> <span id="pData"></span></div>
+      <div><strong>Objetivo:</strong> <span id="pObjetivo"></span></div><div><strong>Finalidade:</strong> <span id="pFinalidade"></span></div>
+      <div><strong>Consultor:</strong> <span id="pConsultor"></span></div><div><strong>Contato:</strong> <span id="pTelefone"></span></div>
+      <div><strong>Unidade:</strong> <span id="pUnidade"></span></div><div><strong>Nº simulação:</strong> <span id="pNumero"></span></div>
+    </div>
+  </div>
+
+  <section class="card noPrint" id="dadosProposta">
+    <h2 class="sectionTitle">Dados para proposta em PDF</h2>
+    <div class="grid3">
+      <div><label>Nome do cliente</label><input id="cliente" type="text" placeholder="Ex.: João da Silva"></div>
+      <div><label>Objetivo do cliente</label><input id="objetivo" type="text" placeholder="Ex.: Trocar de carro, comprar imóvel..."></div>
+      <div><label>Finalidade da carta</label><select id="finalidade"><option>Imóvel</option><option>Veículo</option><option>Serviços</option><option>Máquinas e equipamentos</option><option>Investimento</option><option>Outro</option></select></div>
+      <div><label>Consultor</label><input id="consultor" type="text" value="Jacson Alves"></div>
+      <div><label>Telefone</label><input id="telefone" type="text" placeholder="(44) 9....-...."></div>
+      <div><label>Unidade</label><input id="unidade" type="text" placeholder="Ex.: Ademicon Maringá"></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 class="sectionTitle">Simulação rápida</h2>
+    <div class="grid">
+      <div><label>Objetivo da simulação</label><select id="objetivoSimulacao"><option value="aquisicao">Aquisição de bem</option><option value="investimento">Investimento com carta</option></select></div>
+      <div><label>Perfil Ademicon</label><select id="perfilRegras"><option value="imovel">Imóvel</option><option value="veiculo">Veículo</option><option value="servicos">Serviços</option><option value="maquinas">Máquinas e equipamentos</option><option value="investimento">Investimento</option><option value="personalizado">Personalizado</option></select></div>
+      <div><label>Crédito</label><input id="credito" type="number" value="100000" step="1000"></div>
+      <div><label>Prazo / meses</label><input id="prazo" type="number" value="220" step="1"></div>
+      <div><label>Índice anual de reajuste (%)</label><input id="incc" type="number" value="6" step="0.01"></div>
+      <div><label>Forma de contemplação</label><select id="modalidade" onchange="alternarLance()"><option value="lance">Lance</option><option value="sorteio">Sorteio</option></select></div>
+      <div class="campoLance"><label>Tipo de lance</label><select id="tipoLance"><option>Lance embutido</option><option>Lance fixo</option><option>Lance livre</option><option>Lance limitado</option><option>Lance fidelidade</option><option>Outro</option></select></div>
+      <div class="campoLance"><label>Lance ofertado total (%)</label><input id="lanceOfertado" type="number" value="25" step="0.01"></div>
+    </div>
+
+    <details class="advancedBox">
+      <summary>⚙️ Configurações avançadas da regra</summary>
+      <p class="mini">Use esta área apenas quando o grupo/modalidade tiver regra diferente. Para atendimento rápido, normalmente não precisa mexer aqui.</p>
+      <div class="grid">
+        <div><label>Taxa adm. total (%)</label><input id="txAdm" type="number" value="24" step="0.01"></div>
+        <div><label>Recompra até 60 meses (%)</label><input id="recompra60" type="number" value="35" step="0.01"></div>
+        <div><label>Recompra após 60 meses (%)</label><input id="recompraApos" type="number" value="28" step="0.01"></div>
+        <div class="campoLance"><label>% do lance embutido</label><input id="percEmbutido" type="number" value="100" step="0.01"></div>
+        <div class="campoLance"><label>% pago com recurso próprio</label><input id="percProprio" type="number" value="0" step="0.01"></div>
+        <div><label>Fator parcela antes (%)</label><input id="fatorAntes" type="number" value="59.84" step="0.01"></div>
+        <div><label>Fator parcela após sorteio (%)</label><input id="fatorApos" type="number" value="100" step="0.01"></div>
+        <div class="campoLance"><label>Redução pós por lance (%)</label><input id="redutorLance" type="number" value="80" step="0.01"></div>
+      </div>
+    </details>
+
+    <div class="actions"><button onclick="calcular()">Atualizar simulação</button><button class="secondary" onclick="prepararPDF()">Gerar PDF / imprimir</button><button class="secondary" onclick="baixarCSV()">Baixar tabela CSV</button></div>
+    <p class="note">A tela principal se adapta ao objetivo: aquisição de bem mostra crédito e parcelas; investimento mostra também venda/recompra e resultado estimado. As regras técnicas ficam nas configurações avançadas.</p>
+  </section>
+
+  <section class="kpis">
+    <div class="kpi big"><span>Parcela antes da contemplação</span><strong id="kParcelaAntes">R$ 0,00</strong></div>
+    <div class="kpi"><span>Parcela após contemplação</span><strong id="kParcelaApos">R$ 0,00</strong></div>
+    <div class="kpi"><span>Crédito liberado</span><strong id="kCreditoLiberado">R$ 0,00</strong></div>
+    <div class="kpi"><span>Lance ofertado total</span><strong id="kValorLance">R$ 0,00</strong></div>
+    <div class="kpi"><span>Lance embutido</span><strong id="kLanceEmbutido">R$ 0,00</strong></div>
+    <div class="kpi"><span>Recurso próprio</span><strong id="kRecursoProprio">R$ 0,00</strong></div>
+    <div class="kpi"><span>Crédito atualizado final</span><strong id="kCreditoFinal">R$ 0,00</strong></div>
+    <div class="kpi"><span>Total pago em parcelas</span><strong id="kInvestido">R$ 0,00</strong></div>
+    <div class="kpi investmentOnly"><span>Venda/recompra estimada</span><strong id="kRecompra">R$ 0,00</strong></div>
+    <div class="kpi investmentOnly"><span>Resultado estimado</span><strong id="kLucro">R$ 0,00</strong></div>
+    <div class="kpi investmentOnly"><span>Retorno sobre parcelas</span><strong id="kGanho">0,00%</strong></div>
+    <div class="kpi"><span>Leitura da estratégia</span><strong id="kModalidade">Lance</strong></div>
+  </section>
+
+  <div class="stickySummary noPrint" id="barraResumo">
+    <span>Parcela: <strong id="bParcela">R$ 0,00</strong></span>
+    <span>Crédito final: <strong id="bCredito">R$ 0,00</strong></span>
+    <span class="investmentOnly">Recompra: <strong id="bRecompra">R$ 0,00</strong></span>
+    <span class="investmentOnly">Resultado: <strong id="bLucro">R$ 0,00</strong></span>
+  </div>
+
+  <section class="card" id="resumoComercial">
+    <h2 class="sectionTitle">Resumo da estratégia</h2>
+    <p class="mini" id="textoResumo">Simulação preparada com base nos parâmetros informados e nas regras ajustáveis selecionadas.</p>
+  </section>
+
+  <div class="tabs noPrint"><button class="tab active" onclick="mostrar('tabela',this)">Tabela mês a mês</button><button class="tab" onclick="mostrar('resumo',this)">Resumo rápido</button></div>
+
+  <section id="tabela" class="card printBreak"><h2 class="sectionTitle printOnly">Detalhamento mês a mês</h2><div class="tableTools noPrint"><p class="tableHint">Cabeçalho e coluna “Mês” ficam fixos durante a rolagem.</p><div class="goMonth"><div><label>Ir para o mês</label><input id="mesDestino" type="number" min="1" placeholder="Ex.: 60"></div><button class="secondary" type="button" onclick="irParaMes()">Ir</button></div></div><div class="tableWrap" id="wrapResultado"><table id="resultado"><thead><tr><th>Mês</th><th>Crédito atualizado</th><th>Parcela</th><th>Total pago</th><th>Recompra sorteio</th><th>Resultado sorteio</th><th>Retorno % sorteio</th><th>Recompra com lance</th><th>Resultado com lance</th><th>Retorno % lance</th></tr></thead><tbody></tbody></table></div></section>
+  <section id="resumo" class="card hidden"><h2 class="sectionTitle">Resumo rápido por período</h2><div class="tableWrap"><table id="resumoTabela"><thead><tr><th>Mês</th><th>Crédito</th><th>Total pago</th><th>Valor recompra</th><th>Resultado venda</th><th>% pago sobre crédito</th></tr></thead><tbody></tbody></table></div></section>
+  <div class="printOnly disclaimer">Observação: esta simulação é uma projeção baseada nos parâmetros informados e na lógica da planilha. Os valores podem sofrer alterações em função da atualização do crédito, contemplação, regras do grupo, segmento, modalidade de lance, taxa de administração, seguros e demais condições contratuais. A simulação não representa promessa de contemplação ou garantia de rentabilidade.</div>
+</main>
+<script>
+function aplicarTema(tema, salvar){const root=document.documentElement;if(tema==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',tema)}const seletor=document.getElementById('tema');if(seletor)seletor.value=tema;if(salvar)localStorage.setItem('sim_tema',tema)}
+aplicarTema(localStorage.getItem('sim_tema')||'auto',false);
+let linhas=[];
+const brl=v=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(isFinite(v)?v:0);
+const pct=v=>new Intl.NumberFormat('pt-BR',{style:'percent',minimumFractionDigits:2,maximumFractionDigits:2}).format(isFinite(v)?v:0);
+function n(id){return Number(document.getElementById(id).value||0)} function val(id){return document.getElementById(id).value||''}
+function alternarLance(){const ehSorteio=val('modalidade')==='sorteio';document.querySelectorAll('.campoLance').forEach(el=>el.classList.toggle('campoOculto',ehSorteio));}
+function aplicarPerfil(){const perfil=val('perfilRegras');const finalidade=document.getElementById('finalidade');const mapa={imovel:'Imóvel',veiculo:'Veículo',servicos:'Serviços',maquinas:'Máquinas e equipamentos',investimento:'Investimento'};if(finalidade&&mapa[perfil]) finalidade.value=mapa[perfil];}
+function calcular(){
+  aplicarPerfil();alternarLance();
+  const creditoInicial=n('credito'), prazo=Math.max(1,Math.round(n('prazo'))), incc=n('incc')/100, txAdm=n('txAdm')/100;
+  const recompra60=n('recompra60')/100, recompraApos=n('recompraApos')/100;
+  const lanceOfertado=n('lanceOfertado')/100, percEmbutido=n('percEmbutido')/100, fator=n('fatorAntes')/100;
+  const lanceEmbutidoCarta=lanceOfertado*percEmbutido;
+  linhas=[]; let credito=creditoInicial, parcela=((credito*txAdm+credito)/prazo)*fator, total=0;
+  for(let mes=1;mes<=prazo;mes++){
+    if(mes>1&&(mes-1)%12===0){credito=credito*(1+incc);parcela=parcela*(1+incc)}
+    total+=parcela; const taxaRecompra=mes<60?recompra60:recompraApos;
+    const vendaSorteio=credito*taxaRecompra, lucroSorteio=vendaSorteio-total;
+    const vendaLance=(credito-(credito*lanceEmbutidoCarta))*taxaRecompra, lucroLance=vendaLance-total;
+    linhas.push({mes,credito,parcela,total,taxaRecompra,vendaSorteio,lucroSorteio,percSorteio:lucroSorteio/total,vendaLance,lucroLance,percLance:lucroLance/total});
+  }
+  renderTabela();renderResumo();renderKPIs();renderProposta();salvarLocal();
+}
+function classe(v){return v>=0?'pos':'neg'}
+function renderTabela(){const tb=document.querySelector('#resultado tbody');tb.innerHTML='';linhas.forEach(l=>tb.insertAdjacentHTML('beforeend',`<tr id="mes-${l.mes}" class="${l.mes===60?'mes60':''}"><td>${l.mes}${l.mes===60?' • nova regra':''}</td><td>${brl(l.credito)}</td><td>${brl(l.parcela)}</td><td>${brl(l.total)}</td><td>${brl(l.vendaSorteio)}</td><td class="${classe(l.lucroSorteio)}">${brl(l.lucroSorteio)}</td><td class="${classe(l.percSorteio)}">${pct(l.percSorteio)}</td><td>${brl(l.vendaLance)}</td><td class="${classe(l.lucroLance)}">${brl(l.lucroLance)}</td><td class="${classe(l.percLance)}">${pct(l.percLance)}</td></tr>`))}
+function renderResumo(){const meses=[1,13,25,37,49,60,61,73,85,97,100,120,180,linhas.length].filter((v,i,a)=>v<=linhas.length&&a.indexOf(v)===i);const tb=document.querySelector('#resumoTabela tbody');tb.innerHTML='';const modalidade=val('modalidade');meses.forEach(m=>{const l=linhas[m-1];const venda=modalidade==='sorteio'?l.vendaSorteio:l.vendaLance;const lucro=modalidade==='sorteio'?l.lucroSorteio:l.lucroLance;tb.insertAdjacentHTML('beforeend',`<tr id="mes-${l.mes}" class="${l.mes===60?'mes60':''}"><td>${l.mes}${l.mes===60?' • nova regra':''}</td><td>${brl(l.credito)}</td><td>${brl(l.total)}</td><td>${brl(venda)}</td><td class="${classe(lucro)}">${brl(lucro)}</td><td>${pct(l.total/l.credito)}</td></tr>`)})}
+function renderKPIs(){const first=linhas[0],last=linhas[linhas.length-1],objetivoSim=val('objetivoSimulacao'),modalidade=val('modalidade'),creditoInicial=n('credito'),txAdm=n('txAdm')/100,prazo=Math.max(1,Math.round(n('prazo')));const lanceOfertado=n('lanceOfertado')/100,percEmbutido=n('percEmbutido')/100,percProprio=n('percProprio')/100,fatorApos=n('fatorApos')/100,redutorLance=n('redutorLance')/100;const lanceTotal=modalidade==='sorteio'?0:creditoInicial*lanceOfertado;const lanceEmbutido=modalidade==='sorteio'?0:lanceTotal*percEmbutido;const recursoProprio=modalidade==='sorteio'?0:lanceTotal*percProprio;const lanceEmbutidoPct=creditoInicial?lanceEmbutido/creditoInicial:0;const parcelaAposSorteio=((creditoInicial*(1+txAdm))/prazo)*fatorApos;const parcelaApos=modalidade==='sorteio'?parcelaAposSorteio:parcelaAposSorteio*(1-(lanceEmbutidoPct*redutorLance));const creditoLiberado=modalidade==='sorteio'?creditoInicial:creditoInicial-lanceEmbutido;const recompra=modalidade==='sorteio'?last.vendaSorteio:last.vendaLance;const lucro=modalidade==='sorteio'?last.lucroSorteio:last.lucroLance;document.getElementById('kParcelaAntes').textContent=brl(first.parcela);document.getElementById('kParcelaApos').textContent=brl(parcelaApos);document.getElementById('kCreditoLiberado').textContent=brl(creditoLiberado);document.getElementById('kValorLance').textContent=brl(lanceTotal);document.getElementById('kLanceEmbutido').textContent=brl(lanceEmbutido);document.getElementById('kRecursoProprio').textContent=brl(recursoProprio);document.getElementById('kInvestido').textContent=brl(last.total);document.getElementById('kCreditoFinal').textContent=brl(last.credito);document.getElementById('kRecompra').textContent=brl(recompra);document.getElementById('kLucro').textContent=brl(lucro);document.getElementById('kGanho').textContent=pct(lucro/last.total);document.querySelectorAll('.investmentOnly').forEach(el=>el.style.display=objetivoSim==='investimento'?'':'none');let leitura;if(objetivoSim==='aquisicao'){leitura='Aquisição de bem';}else if(lucro>0){leitura='Investimento favorável';}else if(Math.abs(lucro/last.total)<0.03){leitura='Ponto de atenção';}else{leitura='Não indicado p/ recompra';}document.getElementById('kModalidade').textContent=leitura;document.getElementById('bParcela').textContent=brl(first.parcela);document.getElementById('bCredito').textContent=brl(last.credito);document.getElementById('bRecompra').textContent=brl(recompra);document.getElementById('bLucro').textContent=brl(lucro)}
+function renderProposta(){const modalidade=val('modalidade'),objetivoSim=val('objetivoSimulacao'),credito=brl(n('credito')),prazo=n('prazo'),lance=n('lanceOfertado'),emb=n('percEmbutido'),prop=n('percProprio');let txt;if(objetivoSim==='aquisicao'){txt=modalidade==='sorteio'?`Simulação para aquisição/uso do crédito no objetivo informado, com crédito contratado de ${credito}, contemplação por sorteio e prazo de ${prazo} meses.`:`Simulação para aquisição/uso do crédito no objetivo informado, com crédito contratado de ${credito}, tipo ${val('tipoLance')}, lance ofertado de ${lance}%, sendo ${emb}% embutido e ${prop}% com recurso próprio. Prazo de ${prazo} meses.`;}else{txt=modalidade==='sorteio'?`Simulação de investimento com carta de crédito, crédito contratado de ${credito}, contemplação por sorteio e análise de venda/recompra estimada ao longo do prazo.`:`Simulação de investimento com carta de crédito, crédito contratado de ${credito}, tipo ${val('tipoLance')}, lance ofertado de ${lance}%, sendo ${emb}% embutido e ${prop}% com recurso próprio, com análise de venda/recompra estimada.`;}document.getElementById('textoResumo').textContent=txt;document.getElementById('pCliente').textContent=val('cliente')||'________________';document.getElementById('pObjetivo').textContent=val('objetivo')||'________________';document.getElementById('pFinalidade').textContent=val('finalidade');document.getElementById('pConsultor').textContent=val('consultor')||'________________';document.getElementById('pTelefone').textContent=val('telefone')||'________________';document.getElementById('pUnidade').textContent=val('unidade')||'________________';document.getElementById('pData').textContent=new Date().toLocaleDateString('pt-BR');document.getElementById('pNumero').textContent=localStorage.getItem('sim_numero')||gerarNumero(false)}
+function gerarNumero(salvar=true){let num=localStorage.getItem('sim_numero');if(!num){const d=new Date();num=`SIM-${d.getFullYear()}-${String(Math.floor(Math.random()*90000)+10000)}`;if(salvar)localStorage.setItem('sim_numero',num)}return num}
+function prepararPDF(){gerarNumero(true);renderProposta();setTimeout(()=>window.print(),100)}
+function mostrar(id,btn){document.querySelectorAll('main>section.card:not(:first-child):not(#dadosProposta):not(#resumoComercial)').forEach(s=>s.classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active')}
+function irParaMes(){const mes=Math.max(1,Math.min(linhas.length,Math.round(Number(document.getElementById('mesDestino').value||1))));const row=document.getElementById('mes-'+mes);const wrap=document.getElementById('wrapResultado');if(row&&wrap){wrap.scrollTo({top:Math.max(0,row.offsetTop-48),left:0,behavior:'smooth'});row.animate([{outline:'3px solid var(--gold)'},{outline:'0 solid transparent'}],{duration:1400,easing:'ease-out'});}}
+function baixarCSV(){const header=['Mes','Credito','Parcela','Valor total pago','Valor de venda da cota sorteio','Agio na venda da cota sorteio','Lucro % mes sorteio','Valor de venda da cota lance','Lucro na venda da cota lance','Lucro % mes com lance embutido'];const rows=linhas.map(l=>[l.mes,l.credito,l.parcela,l.total,l.vendaSorteio,l.lucroSorteio,l.percSorteio,l.vendaLance,l.lucroLance,l.percLance]);const csv=[header,...rows].map(r=>r.join(';')).join('\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='simulacao_consorcio.csv';a.click();URL.revokeObjectURL(a.href)}
+const campos=['objetivoSimulacao','perfilRegras','credito','prazo','incc','txAdm','recompra60','recompraApos','modalidade','tipoLance','lanceOfertado','percEmbutido','percProprio','fatorAntes','fatorApos','redutorLance','cliente','objetivo','finalidade','consultor','telefone','unidade'];function salvarLocal(){campos.forEach(id=>localStorage.setItem('sim_'+id,document.getElementById(id).value))}function carregarLocal(){campos.forEach(id=>{const v=localStorage.getItem('sim_'+id);if(v!==null)document.getElementById(id).value=v})}
+document.querySelectorAll('input,select').forEach(i=>i.addEventListener('input',calcular));document.getElementById('mesDestino')?.addEventListener('keydown',e=>{if(e.key==='Enter')irParaMes()});document.querySelectorAll('select').forEach(i=>i.addEventListener('change',calcular));aplicarTema(localStorage.getItem('sim_tema')||'auto',false);carregarLocal();gerarNumero(true);calcular();
+</script>
+</body>
+</html>
